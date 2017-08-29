@@ -37,6 +37,6 @@ I use `.reduce(&:+)` rather than `.sum` because it may not respect the `+` opera
 
 Should use VCR for the tests, but it's unnecessary at the moment.
 
-I didn't implement the `base_min_size`, `base_max_size`, and `quote_increment` logic.
+I didn't implement the `base_min_size`, `base_max_size`, and `quote_increment` logic. JSON encoding of numbers is whatever BigDecimal outputs, which could be pretty ludicrous.
 
 I threw it all into one file for obvious reasons.
