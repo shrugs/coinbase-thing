@@ -1,3 +1,4 @@
+require 'bigdecimal'
 require_relative './app'
 
 describe Sinatra::Application do
@@ -56,6 +57,38 @@ describe Sinatra::Application do
       expect(new_quote).to be(quote)
       expect(new_amount).to be(amount)
       expect(is_inverted).to be(true)
+    end
+  end
+
+  context 'match_order' do
+    let(:orders) { [
+      { price: BigDecimal.new('1'), size: BigDecimal.new('1') },
+      { price: BigDecimal.new('2'), size: BigDecimal.new('1') },
+      { price: BigDecimal.new('3'), size: BigDecimal.new('1') }
+    ] }
+
+    it 'finds some orders' do
+      total, price = match_order(orders, 2)
+      expect(total).to eq(2)
+      expect(price).to eq(1.5)
+    end
+
+    it 'handles exact orders' do
+      total, price = match_order(orders, 1)
+      expect(total).to eq(1)
+      expect(price).to eq(1)
+    end
+
+    it 'matches as much as possible' do
+      total, price = match_order(orders, 4)
+      expect(total).to eq(3)
+      expect(price).to eq(2)
+    end
+
+    it 'soft errors on empty orders' do
+      total, price = match_order([], 1)
+      expect(total).to eq(0)
+      expect(price.nan?).to be(true)
     end
   end
 end

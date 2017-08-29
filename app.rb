@@ -17,6 +17,9 @@ end
 class InvalidParams < StandardError
 end
 
+class InternalError < StandardError
+end
+
 # defining constants for this is probably overkill
 SIDE_KEY = 'action'
 # ^ I prefer to reference this as a side rather than an action
@@ -101,10 +104,10 @@ def match_order(orders, amount)
 	# avg = sum(price * size) / sum(price)
 	total_amount_filled = consumed_orders
 		.map { |o| o[:size] }
-		.reduce(&:+)
+		.reduce(BigDecimal.new(0), &:+)
 	average_price = consumed_orders
 		.map { |o| o[:size] * o[:price] }
-		.reduce(&:+)
+		.reduce(BigDecimal.new(0), &:+)
 		.div(total_amount_filled, 0)
 
 	return total_amount_filled, average_price
@@ -118,6 +121,10 @@ post '/quote' do
 	book = get_orderbook(product_id, is_inverted)
 
 	orders = book[orders_for_side(side)]
+
+  if orders.count === 0
+    raise InternalError, 'No orders to match against!'
+  end
 
 	total, price = match_order(orders, amount)
 
