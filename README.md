@@ -15,13 +15,13 @@ bundle install
 
 # run the server thing
 rackup -p 8000
-
-# test the thing
-rspec -fd .
 ```
 
 ## Testing
 
+```
+rspec -fd .
+```
 
 ## Discussion
 
